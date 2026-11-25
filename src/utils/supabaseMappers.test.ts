@@ -18,7 +18,6 @@ import {
   toSiteContentUpsertPayload,
   toRoomTypeInsertPayload,
 } from './supabaseMappers';
-import { INITIAL_MENU_ITEMS } from '../data/initialData';
 
 test('isUuid validates standard v1-v5 UUID strings only', () => {
   assert.equal(isUuid('e745e81d-1eab-46c1-a888-802e0b519494'), true);
@@ -113,7 +112,30 @@ test('alignFallbackMenuCategories maps placeholder categoryIds to live Supabase 
     }),
   ];
 
-  const aligned = alignFallbackMenuCategories(INITIAL_MENU_ITEMS, liveCategories);
+  const sampleItems = [
+    {
+      id: 'menu-rice-1',
+      categoryId: 'cat-rice',
+      name: 'Bamboo Rice',
+      description: 'Rice in bamboo',
+      price: 250,
+      imageUrl: '/img/rice.jpg',
+      isAvailable: true,
+      isFeatured: true,
+    },
+    {
+      id: 'menu-fish-1',
+      categoryId: 'cat-fish',
+      name: 'Grilled Fish',
+      description: 'Fish grilled',
+      price: 450,
+      imageUrl: '/img/fish.jpg',
+      isAvailable: true,
+      isFeatured: false,
+    },
+  ];
+
+  const aligned = alignFallbackMenuCategories(sampleItems, liveCategories);
   const riceDish = aligned.find((item) => item.id === 'menu-rice-1');
   const fishDish = aligned.find((item) => item.id === 'menu-fish-1');
 

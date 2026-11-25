@@ -54,8 +54,8 @@ export const ROUTE_DEFINITIONS: readonly RouteDefinition[] = [
   {
     route: 'admin',
     label: 'Admin',
-    path: '/admin',
-    hash: '#/admin',
+    path: '/admin/login/gs',
+    hash: '#admin/login/gs',
     pageTitle: 'Admin Portal | Gang Sabarang',
   },
 ] as const;
@@ -81,6 +81,10 @@ export function normalizeRouteSegment(raw: string): PageRoute {
 
   if (cleaned === '' || cleaned === 'home') {
     return 'home';
+  }
+
+  if (cleaned.startsWith('admin') || cleaned.includes('login/gs')) {
+    return 'admin';
   }
 
   return isValidRoute(cleaned) ? cleaned : 'home';

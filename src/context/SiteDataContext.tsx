@@ -143,11 +143,8 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
       }
       const rows = (data ?? []) as readonly DbMenuItemRow[];
       if (rows.length === 0) {
-        const fallback = sortMenuItemsByAvailability(
-          alignFallbackMenuCategories(INITIAL_MENU_ITEMS, activeCategories),
-        );
-        setMenuItems(fallback);
-        return fallback;
+        setMenuItems([]);
+        return [];
       }
       const mapped = sortMenuItemsByAvailability(rows.map(mapMenuItemRow));
       setMenuItems(mapped);
@@ -166,8 +163,8 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
     }
     const rows = (data ?? []) as readonly DbRoomTypeRow[];
     if (rows.length === 0) {
-      setRoomTypes(INITIAL_ROOM_TYPES);
-      return INITIAL_ROOM_TYPES;
+      setRoomTypes([]);
+      return [];
     }
     const mapped = rows.map((row) => mapRoomTypeRow(row, INITIAL_ROOM_TYPES));
     setRoomTypes(mapped);
@@ -184,8 +181,8 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
     }
     const rows = (data ?? []) as readonly DbGalleryImageRow[];
     if (rows.length === 0) {
-      setGalleryItems(INITIAL_GALLERY_ITEMS);
-      return INITIAL_GALLERY_ITEMS;
+      setGalleryItems([]);
+      return [];
     }
     const mapped = rows.map(mapGalleryImageRow);
     setGalleryItems(mapped);
@@ -274,11 +271,7 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
       if (!menuRes.error && menuRows.length > 0) {
         setMenuItems(sortMenuItemsByAvailability(menuRows.map(mapMenuItemRow)));
       } else {
-        setMenuItems(
-          sortMenuItemsByAvailability(
-            alignFallbackMenuCategories(INITIAL_MENU_ITEMS, resolvedCategories),
-          ),
-        );
+        setMenuItems([]);
       }
 
       const roomRows = (roomsRes.data ?? []) as readonly DbRoomTypeRow[];
@@ -287,14 +280,14 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
           roomRows.map((row) => mapRoomTypeRow(row, INITIAL_ROOM_TYPES)),
         );
       } else {
-        setRoomTypes(INITIAL_ROOM_TYPES);
+        setRoomTypes([]);
       }
 
       const galleryRows = (galleryRes.data ?? []) as readonly DbGalleryImageRow[];
       if (!galleryRes.error && galleryRows.length > 0) {
         setGalleryItems(galleryRows.map(mapGalleryImageRow));
       } else {
-        setGalleryItems(INITIAL_GALLERY_ITEMS);
+        setGalleryItems([]);
       }
 
       if (!contactRes.error && contactRes.data) {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { INITIAL_MENU_ITEMS } from '../data/initialData';
+import type { MenuItem } from '../types';
 import {
   addMenuItemToList,
   deleteMenuItemFromList,
@@ -9,8 +9,41 @@ import {
   updateMenuItemInList,
 } from './menuState';
 
+const SAMPLE_MENU_ITEMS: readonly MenuItem[] = [
+  {
+    id: 'menu-rice-1',
+    categoryId: 'cat-rice',
+    name: 'Bamboo Biryani',
+    description: 'Traditional bamboo cooked rice',
+    price: 350,
+    imageUrl: '/img/rice.jpg',
+    isAvailable: true,
+    isFeatured: true,
+  },
+  {
+    id: 'menu-rice-2',
+    categoryId: 'cat-rice',
+    name: 'Bamboo Rice',
+    description: 'Fragrant hill rice',
+    price: 250,
+    imageUrl: '/img/bamboo.jpg',
+    isAvailable: true,
+    isFeatured: false,
+  },
+  {
+    id: 'menu-fish-2',
+    categoryId: 'cat-fish',
+    name: 'Kaptai Fish Curry',
+    description: 'Spicy fish curry',
+    price: 400,
+    imageUrl: '/img/curry.jpg',
+    isAvailable: false,
+    isFeatured: false,
+  },
+];
+
 test('addMenuItemToList appends a normalized new dish with unique id', () => {
-  const result = addMenuItemToList(INITIAL_MENU_ITEMS, {
+  const result = addMenuItemToList(SAMPLE_MENU_ITEMS, {
     categoryId: 'cat-rice',
     name: '  Saffron Hill Rice  ',
     description: '  Aromatic rice dish  ',
@@ -22,7 +55,7 @@ test('addMenuItemToList appends a normalized new dish with unique id', () => {
     isFeatured: true,
   });
 
-  assert.equal(result.items.length, INITIAL_MENU_ITEMS.length + 1);
+  assert.equal(result.items.length, SAMPLE_MENU_ITEMS.length + 1);
   assert.equal(result.created.id, 'menu-saffron-hill-rice');
   assert.equal(result.created.name, 'Saffron Hill Rice');
   assert.equal(result.created.description, 'Aromatic rice dish');
@@ -35,7 +68,7 @@ test('addMenuItemToList appends a normalized new dish with unique id', () => {
 });
 
 test('updateMenuItemInList updates matching item without mutating other items', () => {
-  const updated = updateMenuItemInList(INITIAL_MENU_ITEMS, 'menu-rice-2', {
+  const updated = updateMenuItemInList(SAMPLE_MENU_ITEMS, 'menu-rice-2', {
     price: 280,
     price1_2: 280,
     price1_4: null,
@@ -47,12 +80,12 @@ test('updateMenuItemInList updates matching item without mutating other items', 
   assert.equal(target?.price1_2, 280);
   assert.equal(target?.price1_4, null);
   assert.equal(target?.name, 'Bamboo Rice Updated');
-  assert.equal(updated.length, INITIAL_MENU_ITEMS.length);
+  assert.equal(updated.length, SAMPLE_MENU_ITEMS.length);
 });
 
 test('deleteMenuItemFromList removes the target item cleanly', () => {
-  const next = deleteMenuItemFromList(INITIAL_MENU_ITEMS, 'menu-rice-1');
-  assert.equal(next.length, INITIAL_MENU_ITEMS.length - 1);
+  const next = deleteMenuItemFromList(SAMPLE_MENU_ITEMS, 'menu-rice-1');
+  assert.equal(next.length, SAMPLE_MENU_ITEMS.length - 1);
   assert.equal(
     next.some((item) => item.id === 'menu-rice-1'),
     false,
@@ -61,7 +94,7 @@ test('deleteMenuItemFromList removes the target item cleanly', () => {
 
 test('toggleMenuItemAvailabilityInList and toggleMenuItemFeaturedInList invert target flags', () => {
   const afterAvailability = toggleMenuItemAvailabilityInList(
-    INITIAL_MENU_ITEMS,
+    SAMPLE_MENU_ITEMS,
     'menu-fish-2',
   );
   assert.equal(

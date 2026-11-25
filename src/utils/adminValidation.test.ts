@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { INITIAL_ROOM_TYPES } from '../data/initialData';
+import type { RoomType } from '../types';
 import {
   parseFacilitiesText,
   updateRoomTypeInList,
@@ -83,8 +83,21 @@ test('validateRoomTypeForm and updateRoomTypeInList validate and update cottage 
   assert.equal(valid.value?.price, 3200);
   assert.equal(valid.value?.isAvailable, false);
 
+  const sampleRooms: readonly RoomType[] = [
+    {
+      id: 'room-non-ac-single',
+      name: 'Non-AC Single',
+      type: 'Non-AC Single',
+      price: 3000,
+      capacity: 1,
+      facilities: ['Fan'],
+      images: [],
+      isAvailable: true,
+      description: 'Test room',
+    },
+  ];
   const updated = updateRoomTypeInList(
-    INITIAL_ROOM_TYPES,
+    sampleRooms,
     'room-non-ac-single',
     valid.value!,
   );

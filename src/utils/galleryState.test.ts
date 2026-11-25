@@ -1,12 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { INITIAL_GALLERY_ITEMS } from '../data/initialData';
+import type { GalleryItem } from '../types';
 import {
   addGalleryItemToList,
   deleteGalleryItemFromList,
   isSafeImageSource,
   validateGalleryItemForm,
 } from './galleryState';
+
+const SAMPLE_GALLERY_ITEMS: readonly GalleryItem[] = [
+  {
+    id: 'gallery-sunset',
+    title: 'Kaptai Sunset',
+    category: 'Nature',
+    imageUrl: '/img/sunset.jpg',
+  },
+];
 
 test('isSafeImageSource accepts asset paths, https URLs, and safe raster data URLs while rejecting unsafe schemes', () => {
   assert.equal(
@@ -46,13 +55,13 @@ test('validateGalleryItemForm rejects empty fields and accepts valid title, cate
 });
 
 test('addGalleryItemToList prepends new photo and deleteGalleryItemFromList removes by id', () => {
-  const added = addGalleryItemToList(INITIAL_GALLERY_ITEMS, {
+  const added = addGalleryItemToList(SAMPLE_GALLERY_ITEMS, {
     title: 'Morning Mist Veranda',
     category: 'Cottage',
     imageUrl: '/src/assets/images/cottage_nature_retreat_1795586943481.jpg',
   });
 
-  assert.equal(added.items.length, INITIAL_GALLERY_ITEMS.length + 1);
+  assert.equal(added.items.length, SAMPLE_GALLERY_ITEMS.length + 1);
   assert.equal(added.items[0]?.id, 'gallery-morning-mist-veranda');
   assert.equal(added.created.title, 'Morning Mist Veranda');
 
@@ -60,7 +69,7 @@ test('addGalleryItemToList prepends new photo and deleteGalleryItemFromList remo
     added.items,
     'gallery-morning-mist-veranda',
   );
-  assert.equal(removed.length, INITIAL_GALLERY_ITEMS.length);
+  assert.equal(removed.length, SAMPLE_GALLERY_ITEMS.length);
   assert.equal(
     removed.some((item) => item.id === 'gallery-morning-mist-veranda'),
     false,

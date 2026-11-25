@@ -1,9 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  INITIAL_FOOD_CATEGORIES,
-  INITIAL_MENU_ITEMS,
-} from '../data/initialData';
+import { INITIAL_FOOD_CATEGORIES } from '../data/initialData';
 import type { MenuItem } from '../types';
 import {
   filterMenuItems,
@@ -14,9 +11,42 @@ import {
   sortMenuItemsByAvailability,
 } from './menuFilter';
 
+const SAMPLE_MENU_ITEMS: readonly MenuItem[] = [
+  {
+    id: 'menu-rice-1',
+    categoryId: 'cat-rice',
+    name: 'Bamboo Biryani',
+    description: 'Traditional bamboo cooked rice',
+    price: 350,
+    imageUrl: '/img/rice.jpg',
+    isAvailable: true,
+    isFeatured: true,
+  },
+  {
+    id: 'menu-fish-1',
+    categoryId: 'cat-fish',
+    name: 'Grilled Lake Fish',
+    description: 'Fresh Kaptai lake fish grilled',
+    price: 450,
+    imageUrl: '/img/fish.jpg',
+    isAvailable: false,
+    isFeatured: true,
+  },
+  {
+    id: 'menu-fish-2',
+    categoryId: 'cat-fish',
+    name: 'Kaptai Fish Curry',
+    description: 'Spicy fish curry',
+    price: 400,
+    imageUrl: '/img/curry.jpg',
+    isAvailable: true,
+    isFeatured: false,
+  },
+];
+
 test('filterMenuItems returns all items with available items first when category is all and query is empty', () => {
-  const result = filterMenuItems(INITIAL_MENU_ITEMS, 'all', '');
-  assert.equal(result.length, INITIAL_MENU_ITEMS.length);
+  const result = filterMenuItems(SAMPLE_MENU_ITEMS, 'all', '');
+  assert.equal(result.length, SAMPLE_MENU_ITEMS.length);
 
   const firstUnavailableIndex = result.findIndex((item) => !item.isAvailable);
   if (firstUnavailableIndex !== -1) {
@@ -115,17 +145,17 @@ test('getFeaturedMenuItems returns only featured items sorted with available ite
 });
 
 test('filterMenuItems filters accurately by category id', () => {
-  const riceItems = filterMenuItems(INITIAL_MENU_ITEMS, 'cat-rice', '');
-  assert.ok(riceItems.length >= 2);
+  const riceItems = filterMenuItems(SAMPLE_MENU_ITEMS, 'cat-rice', '');
+  assert.ok(riceItems.length >= 1);
   assert.ok(riceItems.every((item) => item.categoryId === 'cat-rice'));
 });
 
 test('filterMenuItems filters case-insensitively by name or description', () => {
-  const fishMatches = filterMenuItems(INITIAL_MENU_ITEMS, 'all', 'grilled lake');
+  const fishMatches = filterMenuItems(SAMPLE_MENU_ITEMS, 'all', 'grilled lake');
   assert.equal(fishMatches.length, 1);
   assert.equal(fishMatches[0]?.id, 'menu-fish-1');
 
-  const noMatches = filterMenuItems(INITIAL_MENU_ITEMS, 'cat-drinks', 'steak');
+  const noMatches = filterMenuItems(SAMPLE_MENU_ITEMS, 'cat-drinks', 'steak');
   assert.equal(noMatches.length, 0);
 });
 

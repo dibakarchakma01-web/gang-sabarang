@@ -166,16 +166,6 @@ export function Footer({ onNavigate }: FooterProps) {
         {/* Bottom Bar */}
         <div className="mt-12 border-t border-brand-ivory/15 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-sm text-brand-ivory/75">
           <p>&copy; {currentYear} Gang Sabarang. All rights reserved.</p>
-          <a
-            href="#/admin"
-            onClick={(event) => {
-              event.preventDefault();
-              onNavigate('admin');
-            }}
-            className="text-brand-ivory/75 hover:text-brand-secondary transition-colors whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-secondary"
-          >
-            Admin Portal
-          </a>
         </div>
       </div>
     </footer>
