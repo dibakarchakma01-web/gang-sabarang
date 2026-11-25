@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Info, Search, X } from 'lucide-react';
 import { MenuItemCard } from '../components/menu/MenuItemCard';
 import { Button } from '../components/ui/Button';
@@ -16,19 +16,29 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
   const { categories, menuItems } = useSiteData();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [visibleCount, setVisibleCount] = useState<number>(10);
+
+  // Reset visible count whenever category or search query changes
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [selectedCategoryId, searchQuery]);
 
   const sortedCategories = [...categories].sort(
     (a, b) => a.displayOrder - b.displayOrder,
   );
+
   const filteredItems = filterMenuItems(
     menuItems,
     selectedCategoryId,
     searchQuery,
   );
 
+  const displayedItems = filteredItems.slice(0, visibleCount);
+
   const handleResetFilters = () => {
     setSelectedCategoryId('all');
     setSearchQuery('');
+    setVisibleCount(10);
   };
 
   return (
@@ -122,12 +132,12 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
       {/* Menu Grid or Empty State */}
       <section
         aria-label="Menu items"
-        className="mx-auto w-full max-w-6xl px-5 py-12 sm:px-8 sm:py-16"
+        className="mx-auto w-full max-w-6xl px-3 sm:px-8 py-10 sm:py-16"
       >
         <DataSyncNotice resourceLabel="menu dishes" />
         <div className="mb-6 flex items-center justify-between text-sm text-brand-ink/70">
           <p className="tabular-nums">
-            Showing {filteredItems.length}{' '}
+            Showing {displayedItems.length} of {filteredItems.length}{' '}
             {filteredItems.length === 1 ? 'dish' : 'dishes'}
           </p>
           {(selectedCategoryId !== 'all' || searchQuery.trim() !== '') && (
@@ -159,20 +169,35 @@ export function MenuPage({ onNavigate }: MenuPageProps) {
             </div>
           </div>
         ) : (
-          <div
-            data-testid="menu-items-grid"
-            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredItems.map((item) => (
-              <MenuItemCard
-                key={item.id}
-                item={item}
-                categoryName={getCategoryName(categories, item.categoryId)}
-                surface="white"
-                showFeaturedIndicator
-              />
-            ))}
-          </div>
+          <>
+            <div
+              data-testid="menu-items-grid"
+              className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3"
+            >
+              {displayedItems.map((item) => (
+                <MenuItemCard
+                  key={item.id}
+                  item={item}
+                  categoryName={getCategoryName(categories, item.categoryId)}
+                  surface="white"
+                  showFeaturedIndicator
+                />
+              ))}
+            </div>
+
+            {/* Load More Button */}
+            {visibleCount < filteredItems.length ? (
+              <div className="mt-12 flex justify-center">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setVisibleCount((prev) => prev + 10)}
+                >
+                  Load More Dishes ({filteredItems.length - visibleCount} remaining)
+                </Button>
+              </div>
+            ) : null}
+          </>
         )}
 
         {/* Dining Notice */}
