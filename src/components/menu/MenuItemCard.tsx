@@ -1,5 +1,6 @@
-import { CheckCircle2, Clock, Star } from 'lucide-react';
+import { CheckCircle2, Clock, Plus, Star } from 'lucide-react';
 import { formatBDT } from '../../data/initialData';
+import { useSiteData } from '../../context/SiteDataContext';
 import type { MenuItem } from '../../types';
 import {
   getMenuAvailabilityLabel,
@@ -22,6 +23,7 @@ export function MenuItemCard({
   showFeaturedIndicator = false,
   compact = false,
 }: MenuItemCardProps) {
+  const { addToCart } = useSiteData();
   const surfaceClass = surface === 'ivory' ? 'bg-brand-ivory' : 'bg-white/85';
   const portionPillSurfaceClass =
     surface === 'ivory' ? 'bg-white' : 'bg-brand-ivory';
@@ -106,34 +108,58 @@ export function MenuItemCard({
 
       <div
         data-testid={`menu-card-price-${item.id}`}
-        className={`${footerMarginClass} border-t border-brand-primary/10 flex flex-wrap items-center justify-between gap-2.5`}
+        className={`${footerMarginClass} border-t border-brand-primary/10 flex flex-col gap-3`}
       >
-        <span className="text-xs font-medium text-brand-ink/60">
-          {portionPrices.length > 0 ? 'Portions' : 'Dine-In Rate'}
-        </span>
-
-        {portionPrices.length > 0 ? (
-          <div className="flex flex-wrap items-center justify-end gap-1.5">
-            {portionPrices.map((portion) => (
-              <span
-                key={portion.label}
-                className={`inline-flex items-center gap-1 rounded-md border border-brand-secondary/55 ${portionPillSurfaceClass} px-2.5 py-1 text-xs font-bold tabular-nums text-brand-primary whitespace-nowrap`}
-              >
-                <span className="font-semibold text-brand-ink/75">
-                  {portion.label}:
-                </span>
-                <span>{formatBDT(portion.amount)}</span>
-              </span>
-            ))}
-          </div>
-        ) : (
-          <span
-            className={`font-bold tabular-nums text-brand-primary ${
-              compact ? 'text-lg' : 'text-xl'
-            }`}
-          >
-            {formatBDT(item.price)}
+        <div className="flex flex-wrap items-center justify-between gap-2.5">
+          <span className="text-xs font-medium text-brand-ink/60">
+            {portionPrices.length > 0 ? 'Portions & Rates' : 'Dine-In / Order Rate'}
           </span>
+
+          {portionPrices.length === 0 ? (
+            <span
+              className={`font-bold tabular-nums text-brand-primary ${
+                compact ? 'text-lg' : 'text-xl'
+              }`}
+            >
+              {formatBDT(item.price)}
+            </span>
+          ) : null}
+        </div>
+
+        {/* Add to Cart Actions */}
+        {item.isAvailable ? (
+          portionPrices.length > 0 ? (
+            <div className="grid grid-cols-2 gap-2">
+              {portionPrices.map((portion) => (
+                <button
+                  key={portion.label}
+                  type="button"
+                  onClick={() => addToCart(item, portion.label, portion.amount)}
+                  className={`inline-flex items-center justify-between gap-1 rounded-lg border border-brand-secondary/60 ${portionPillSurfaceClass} px-3 py-2 text-xs font-bold text-brand-primary hover:bg-brand-primary hover:text-brand-ivory transition-colors cursor-pointer group/btn`}
+                  title={`Add ${portion.label} portion (${formatBDT(portion.amount)}) to cart`}
+                >
+                  <span className="font-semibold">{portion.label}</span>
+                  <span className="flex items-center gap-1">
+                    <span className="tabular-nums">{formatBDT(portion.amount)}</span>
+                    <Plus className="h-3.5 w-3.5 text-brand-secondary group-hover/btn:text-brand-ivory" aria-hidden="true" />
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => addToCart(item, null, item.price)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-brand-primary px-4 py-2.5 text-xs font-bold text-brand-ivory shadow-xs hover:bg-brand-primary/90 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-secondary"
+            >
+              <Plus className="h-4 w-4 text-brand-secondary" aria-hidden="true" />
+              <span>Add to Cart ({formatBDT(item.price)})</span>
+            </button>
+          )
+        ) : (
+          <div className="text-center py-2 text-xs font-medium text-brand-ink/50 bg-brand-primary/4 rounded-lg">
+            Currently Stock Out
+          </div>
         )}
       </div>
     </article>

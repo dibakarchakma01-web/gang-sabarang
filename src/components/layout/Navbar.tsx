@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, ShoppingBag, X } from 'lucide-react';
+import { formatBDT } from '../../data/initialData';
+import { useSiteData } from '../../context/SiteDataContext';
 import type { PageRoute } from '../../types';
 import { PUBLIC_ROUTE_DEFINITIONS } from '../../utils/router';
 import { Button } from '../ui/Button';
@@ -10,6 +12,7 @@ interface NavbarProps {
 }
 
 export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
+  const { cartTotalCount, cartSubtotal, setIsCartOpen } = useSiteData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -88,8 +91,29 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
           })}
         </nav>
 
-        {/* Right: Primary CTA (Desktop) + Mobile Hamburger Toggle */}
+        {/* Right: Cart Trigger + Primary CTA (Desktop) + Mobile Hamburger Toggle */}
         <div className="flex items-center gap-3 shrink-0">
+          {/* Cart Button */}
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            aria-label="Open food cart"
+            className="relative inline-flex items-center gap-2 rounded-lg border border-brand-primary/20 bg-white px-3.5 py-2 text-sm font-semibold text-brand-primary hover:bg-brand-primary/6 transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-secondary"
+          >
+            <ShoppingBag className="h-4 w-4 text-brand-secondary" aria-hidden="true" />
+            <span className="hidden sm:inline">Cart</span>
+            {cartTotalCount > 0 ? (
+              <span className="inline-flex items-center justify-center rounded-full bg-brand-accent px-2 py-0.5 text-xs font-bold text-white tabular-nums shadow-xs">
+                {cartTotalCount}
+              </span>
+            ) : null}
+            {cartTotalCount > 0 ? (
+              <span className="hidden md:inline text-xs font-medium text-brand-ink/70 tabular-nums">
+                ({formatBDT(cartSubtotal)})
+              </span>
+            ) : null}
+          </button>
+
           <div className="hidden lg:block">
             <Button
               variant="primary"
@@ -152,7 +176,7 @@ export function Navbar({ currentRoute, onNavigate }: NavbarProps) {
             })}
           </nav>
 
-          <div className="mt-4 border-t border-brand-primary/10 pt-4">
+          <div className="mt-4 border-t border-brand-primary/10 pt-4 flex flex-col gap-3">
             <Button
               variant="primary"
               size="md"

@@ -15,6 +15,7 @@ import {
   INITIAL_ROOM_TYPES,
   INITIAL_SITE_CONTENT,
 } from '../data/initialData';
+import { CartDrawer } from '../components/cart/CartDrawer';
 import { supabase } from '../lib/supabase';
 import type {
   ContactInfo,
@@ -51,6 +52,14 @@ import {
   type DbSiteContentRow,
 } from '../utils/supabaseMappers';
 
+export interface CartItem {
+  readonly cartItemId: string;
+  readonly menuItem: MenuItem;
+  readonly portion: string | null;
+  readonly unitPrice: number;
+  readonly quantity: number;
+}
+
 export interface SiteDataContextValue {
   readonly categories: readonly FoodCategory[];
   readonly menuItems: readonly MenuItem[];
@@ -60,6 +69,19 @@ export interface SiteDataContextValue {
   readonly siteContent: SiteContent;
   readonly isLoading: boolean;
   readonly dataError: string | null;
+  readonly cartItems: readonly CartItem[];
+  readonly isCartOpen: boolean;
+  readonly setIsCartOpen: (open: boolean) => void;
+  readonly addToCart: (
+    item: MenuItem,
+    portion?: string | null,
+    unitPrice?: number,
+  ) => void;
+  readonly removeFromCart: (cartItemId: string) => void;
+  readonly updateCartQuantity: (cartItemId: string, quantity: number) => void;
+  readonly clearCart: () => void;
+  readonly cartTotalCount: number;
+  readonly cartSubtotal: number;
   readonly clearDataError: () => void;
   readonly refreshSiteData: () => Promise<void>;
   readonly addFoodCategory: (input: {
@@ -115,6 +137,73 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [dataError, setDataError] = useState<string | null>(null);
+  const [cartItems, setCartItems] = useState<readonly CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+
+  const addToCart = useCallback(
+    (item: MenuItem, portion: string | null = null, unitPrice?: number) => {
+      const price =
+        unitPrice ??
+        (portion === '1:2'
+          ? item.price1_2 ?? item.price
+          : portion === '1:4'
+          ? item.price1_4 ?? item.price
+          : item.price);
+      const cartItemId = `${item.id}-${portion || 'standard'}`;
+      setCartItems((prev) => {
+        const existingIndex = prev.findIndex((ci) => ci.cartItemId === cartItemId);
+        if (existingIndex !== -1) {
+          const updated = [...prev];
+          const existing = updated[existingIndex]!;
+          updated[existingIndex] = {
+            ...existing,
+            quantity: existing.quantity + 1,
+          };
+          return updated;
+        }
+        return [
+          ...prev,
+          {
+            cartItemId,
+            menuItem: item,
+            portion,
+            unitPrice: price,
+            quantity: 1,
+          },
+        ];
+      });
+      setIsCartOpen(true);
+    },
+    [],
+  );
+
+  const removeFromCart = useCallback((cartItemId: string) => {
+    setCartItems((prev) => prev.filter((ci) => ci.cartItemId !== cartItemId));
+  }, []);
+
+  const updateCartQuantity = useCallback((cartItemId: string, quantity: number) => {
+    if (quantity <= 0) {
+      setCartItems((prev) => prev.filter((ci) => ci.cartItemId !== cartItemId));
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((ci) => (ci.cartItemId === cartItemId ? { ...ci, quantity } : ci)),
+    );
+  }, []);
+
+  const clearCart = useCallback(() => {
+    setCartItems([]);
+  }, []);
+
+  const cartTotalCount = useMemo(
+    () => cartItems.reduce((sum, ci) => sum + ci.quantity, 0),
+    [cartItems],
+  );
+
+  const cartSubtotal = useMemo(
+    () => cartItems.reduce((sum, ci) => sum + ci.unitPrice * ci.quantity, 0),
+    [cartItems],
+  );
 
   const clearDataError = useCallback(() => {
     setDataError(null);
@@ -709,6 +798,15 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
       deleteGalleryItem,
       updateContactInfo,
       updateSiteContent,
+      cartItems,
+      isCartOpen,
+      setIsCartOpen,
+      addToCart,
+      removeFromCart,
+      updateCartQuantity,
+      clearCart,
+      cartTotalCount,
+      cartSubtotal,
     }),
     [
       categories,
@@ -719,6 +817,8 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
       siteContent,
       isLoading,
       dataError,
+      cartItems,
+      isCartOpen,
       clearDataError,
       refreshSiteData,
       addFoodCategory,
@@ -736,11 +836,20 @@ export function SiteDataProvider({ children }: SiteDataProviderProps) {
       deleteGalleryItem,
       updateContactInfo,
       updateSiteContent,
+      addToCart,
+      removeFromCart,
+      updateCartQuantity,
+      clearCart,
+      cartTotalCount,
+      cartSubtotal,
     ],
   );
 
   return (
-    <SiteDataContext.Provider value={value}>{children}</SiteDataContext.Provider>
+    <SiteDataContext.Provider value={value}>
+      {children}
+      <CartDrawer />
+    </SiteDataContext.Provider>
   );
 }
 
