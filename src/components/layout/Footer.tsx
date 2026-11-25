@@ -16,18 +16,30 @@ import {
 } from '../../utils/contactLinks';
 import { PUBLIC_ROUTE_DEFINITIONS } from '../../utils/router';
 
-interface FooterProps {
+export interface FooterProps {
   readonly onNavigate: (route: PageRoute) => void;
 }
 
 export function Footer({ onNavigate }: FooterProps) {
   const { contactInfo } = useSiteData();
   const currentYear = new Date().getFullYear();
-  const formattedPhone = formatPhoneDisplay(contactInfo.phone);
-  const telHref = toTelHref(contactInfo.phone);
-  const formattedWhatsApp = formatPhoneDisplay(contactInfo.whatsapp);
-  const whatsAppHref = toWhatsAppHref(contactInfo.whatsapp);
-  const facebookHref = toSafeExternalUrl(contactInfo.facebookUrl);
+
+  // Gang Sabarang Restaurant contact info
+  const restaurantPhone = contactInfo.phone || '+8801550050641';
+  const formattedPhone = formatPhoneDisplay(restaurantPhone);
+  const telHref = toTelHref(restaurantPhone);
+
+  const restaurantWhatsApp = contactInfo.whatsapp || '+8801550050641';
+  const formattedWhatsApp = formatPhoneDisplay(restaurantWhatsApp);
+  const restaurantWhatsAppHref =
+    toWhatsAppHref(restaurantWhatsApp) || 'https://wa.me/8801550050641';
+
+  const facebookUrl =
+    contactInfo.facebookUrl || 'https://www.facebook.com/gangsabarang';
+  const facebookHref = toSafeExternalUrl(facebookUrl);
+
+  // Developer (Dibakar Chakma) contact link
+  const developerWhatsAppHref = 'https://wa.me/8801714410596';
 
   return (
     <footer className="bg-brand-primary text-brand-ivory border-t border-brand-secondary/30">
@@ -46,7 +58,8 @@ export function Footer({ onNavigate }: FooterProps) {
               aria-hidden="true"
             />
             <p className="max-w-sm text-base leading-relaxed text-brand-ivory/85">
-              Gang Sabarang — Restaurant &amp; Cottage surrounded by the natural beauty of Rangamati.
+              Gang Sabarang — Restaurant &amp; Cottage surrounded by the natural
+              beauty of Rangamati.
             </p>
           </div>
 
@@ -109,7 +122,7 @@ export function Footer({ onNavigate }: FooterProps) {
                       {formattedPhone}
                     </a>
                   ) : (
-                    contactInfo.phone
+                    restaurantPhone
                   )}
                 </span>
               </li>
@@ -121,9 +134,9 @@ export function Footer({ onNavigate }: FooterProps) {
                 />
                 <span>
                   WhatsApp:{' '}
-                  {whatsAppHref ? (
+                  {restaurantWhatsAppHref ? (
                     <a
-                      href={whatsAppHref}
+                      href={restaurantWhatsAppHref}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 tabular-nums hover:text-brand-secondary transition-colors underline decoration-brand-ivory/25 underline-offset-4"
@@ -132,7 +145,7 @@ export function Footer({ onNavigate }: FooterProps) {
                       <ExternalLink className="h-3 w-3" aria-hidden="true" />
                     </a>
                   ) : (
-                    contactInfo.whatsapp
+                    restaurantWhatsApp
                   )}
                 </span>
               </li>
@@ -155,7 +168,7 @@ export function Footer({ onNavigate }: FooterProps) {
                       <ExternalLink className="h-3 w-3" aria-hidden="true" />
                     </a>
                   ) : (
-                    contactInfo.facebookUrl
+                    facebookUrl
                   )}
                 </span>
               </li>
@@ -166,6 +179,29 @@ export function Footer({ onNavigate }: FooterProps) {
         {/* Bottom Bar */}
         <div className="mt-12 border-t border-brand-ivory/15 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-sm text-brand-ivory/75">
           <p>&copy; {currentYear} Gang Sabarang. All rights reserved.</p>
+          <div className="flex items-center gap-2">
+            <span>
+              Designed &amp; developed by{' '}
+              <a
+                href="https://www.facebook.com/dibakorchofficial"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand-secondary hover:text-brand-accent transition-colors underline decoration-brand-secondary/40 underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-secondary"
+              >
+                Dibakar Chakma
+              </a>
+            </span>
+            <a
+              href={developerWhatsAppHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              title="Chat with Dibakar Chakma on WhatsApp"
+              className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-brand-secondary/40 bg-brand-primary/60 text-brand-secondary hover:border-brand-secondary hover:bg-brand-secondary hover:text-brand-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-secondary"
+            >
+              <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
