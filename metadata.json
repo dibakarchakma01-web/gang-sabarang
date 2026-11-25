@@ -1,0 +1,6 @@
+{
+  "name": "গাং সাবারাং | রেস্টুরেন্ট ও কটেজ — রাঙামাটি",
+  "description": "প্রকৃতির সান্নিধ্যে আভিজাত্য ও আতিথেয়তা — রাঙামাটি। গাং সাবারাং রেস্টুরেন্ট ও কটেজের ওয়েব অ্যাপ্লিকেশন।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
