@@ -23,7 +23,7 @@ export const SUPABASE_ANON_KEY = resolveEnvValue(
   DEFAULT_SUPABASE_ANON_KEY,
 );
 
-export const SUPABASE_MEDIA_BUCKET = 'ANG-SABARANG-MEDIA';
+export const SUPABASE_MEDIA_BUCKET = 'gang-sabarang-media';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {

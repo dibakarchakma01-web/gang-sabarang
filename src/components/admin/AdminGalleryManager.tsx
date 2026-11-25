@@ -301,7 +301,7 @@ export function AdminGalleryManager() {
                     ? `Uploading ${selectedFileName} to Supabase Storage...`
                     : selectedFileName
                       ? `Uploaded: ${selectedFileName}`
-                      : 'Uploads directly to Supabase Storage (ANG-SABARANG-MEDIA)'}
+                      : 'Uploads directly to Supabase Storage (gang-sabarang-media)'}
                 </span>
               </div>
             </div>

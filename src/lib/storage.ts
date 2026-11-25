@@ -28,8 +28,9 @@ export async function uploadMediaFile(
 
   if (error || !data?.path) {
     throw new Error(
-      error?.message ||
-        'Unable to upload image to Gang Sabarang storage. Please verify you are signed in and try again.',
+      `Supabase Storage upload error in bucket "${SUPABASE_MEDIA_BUCKET}": ${
+        error?.message || 'Unknown upload failure'
+      }`,
     );
   }
 
